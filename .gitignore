@@ -1,0 +1,4 @@
+/.idea
+/Terraform/.terraform.lock.hcl
+/Terraform/.terraform/
+/Terraform/backend.conf

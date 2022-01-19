@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serverfarms_plan_dotnet_name": {
+            "value": "plan-dotnet-test"
+        },
+        "sites_app_todo_dotnet_eastus_name": {
+            "value": "app-todo-dotnet-eastus-test"
+        },
+        "servers_sqldb_webappbase_eastus_name": {
+            "value": "sqldb-webappbase-trdt-eastus"
+        },
+        "location": {
+            "value": "eastus" 
+        }
+    }
+}
