@@ -1,11 +1,7 @@
 #!/bin/bash
 
-GROUP="arm_test"
-
-
-
 az deployment group create \
   --name ExampleDeployment \
-  --resource-group $GROUP \
+  --resource-group $1 \
   --template-file "./webapp.json" \
   --parameters @"./webapp.parameters.json"

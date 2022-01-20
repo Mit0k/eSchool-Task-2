@@ -2,6 +2,10 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+		"site_name": { 
+			"type": "string", 
+			"defaultValue": "eschool-site"
+		},
 
         "serverfarms_plan_dotnet_name": {
             "defaultValue": "plan-webapp-java",
@@ -13,9 +17,7 @@
         },
         "location": {
             "type": "string",
-            "metadata": {
-                "description": "description"
-            }
+            "defaultValue": "eastus"
         }
     },
     "variables": {},
@@ -122,25 +124,6 @@
             }
         },
         {
-            "type": "Microsoft.Web/sites/deployments",
-            "apiVersion": "2021-02-01",
-            "name": "[concat(parameters('sites_app_todo_dotnet_eastus_name'), '/8a3a0616314c36decd575d9c6f6153c5c6d42de2')]",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('sites_app_todo_dotnet_eastus_name'))]"
-            ],
-            "properties": {
-                "status": 4,
-                "author_email": "mitok.alexander@gmail.com",
-                "author": "mitok",
-                "deployer": "dotmitok",
-                "message": "s",
-                "start_time": "2022-01-14T08:17:59.540852Z",
-                "end_time": "2022-01-14T08:20:39.3483536Z",
-                "active": true
-            }
-        },
-        {
             "type": "Microsoft.Web/sites/hostNameBindings",
             "apiVersion": "2021-02-01",
             "name": "[concat(parameters('sites_app_todo_dotnet_eastus_name'), '/', parameters('sites_app_todo_dotnet_eastus_name'), '.azurewebsites.net')]",
@@ -149,7 +132,7 @@
                 "[resourceId('Microsoft.Web/sites', parameters('sites_app_todo_dotnet_eastus_name'))]"
             ],
             "properties": {
-                "siteName": "app-todo-dotnet-eastus",
+                "siteName": "[parameters('site_name')]",
                 "hostNameType": "Verified"
             }
         }
