@@ -33,7 +33,7 @@ module "dns_zone" {
   project_name = var.project_name
   region       = var.region
   domain       = var.domain
-  ip_list      = module.network.public_ip_list
+  public_ip      = module.network.public_ip
 }
 #Module 'server'
 module "servers" {
@@ -45,7 +45,7 @@ module "servers" {
   username_prefix = var.username_prefix
 
   nic_test_server_id = module.network.nic_test_server_id
-  nic_ci_server_id   = module.network.nic_ci_server_id
+  ssh_keys           = var.ssh_keys
 }
 
 module "database" {

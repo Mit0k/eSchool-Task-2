@@ -20,7 +20,6 @@ resource "azurerm_private_dns_zone" "main_zone" {
   name                = "${var.project_name}.mysql.database.azure.com"
   resource_group_name = var.group_name
 }
-
 resource "azurerm_private_dns_zone_virtual_network_link" "link" {
   name                  = "mysql-link"
   private_dns_zone_name = azurerm_private_dns_zone.main_zone.name
@@ -32,6 +31,7 @@ resource "random_password" "password" {
   length           = 16
   special          = true
   override_special = "_%@"
+
 }
 
 resource "azurerm_mysql_flexible_server" "mysql_db" {

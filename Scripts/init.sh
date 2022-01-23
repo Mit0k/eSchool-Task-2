@@ -1,11 +1,13 @@
 #!/bin/bash
-
+##TODO: VALIDATE
+## TODO: "There are no credentials provided in your command and environment, we will query for account key for your storage account."
+# TODO: CREATE FILE wo creating RG...KV
 LOCATION="eastus"
-PROJECT="escool"
+PROJECT="escoolManual"
 RESOURCE_GROUP_NAME="rg-secrets-$LOCATION"
-STORAGE_ACCOUNT_NAME="tfstate$RANDOM"
-CONTAINER_NAME="tfstate"
-KEYVAULT_NAME="$PROJECT-keyvault"
+STORAGE_ACCOUNT_NAME="storagetfstate$RANDOM"
+CONTAINER_NAME="containertfstate"
+KEYVAULT_NAME="kv-$PROJECT"
 
 create_secret()
 {
@@ -39,10 +41,10 @@ create_file()
   else
     echo > $FILE
   fi;
-  echo "resource_group_name  = \"$RESOURCE_GROUP_NAME\"" >> $FILE
-  echo "storage_account_name = \"$STORAGE_ACCOUNT_NAME\"" >> $FILE
-  echo "container_name       = \"$CONTAINER_NAME\"" >> $FILE
-  echo "key                  = \"$KEYVAULT_NAME\"" >> $FILE
+  echo "resource_group_name   = \"$RESOURCE_GROUP_NAME\"" \
+        "storage_account_name = \"$STORAGE_ACCOUNT_NAME\"" \
+        "container_name       = \"$CONTAINER_NAME\"" \
+        "key                  = \"$KEYVAULT_NAME\"" >> $FILE
 }
 
 create_secret

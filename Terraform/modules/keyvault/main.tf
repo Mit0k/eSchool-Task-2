@@ -1,7 +1,12 @@
 data "azurerm_client_config" "current" {}
 
+resource "random_integer" "kv_suffix_gen" {
+  min = 100
+  max = 999
+}
+
 resource "azurerm_key_vault" "keyvault" {
-  name                = "kv-${var.project_name}-${var.region}"
+  name                = "kv-${var.project_name}${random_integer.kv_suffix_gen.result}"
   location            = var.region
   resource_group_name = var.group_name
 

@@ -17,22 +17,28 @@ resource "azurerm_subnet" "subnet" {
 
 
 ### Dynamically configured resources
-locals {
-  server_names = ["test_server", "ci_server"]
+variable "ip_suffix" {
+  default = ""
+}
+resource "random_id" "ip_suffix_gen" {
+  byte_length = 8
+  keepers = {
+    ip_suffix = var.ip_suffix
+  }
 }
 # Public IP for VM`s
-resource "azurerm_public_ip" "public_ip_list" {
-  for_each            = toset(local.server_names)
-  name                = "pip-${var.project_name}-${each.value}-${var.region}"
+resource "azurerm_public_ip" "public_ip" {
+  name                = "pip-${var.project_name}-${var.project_name}-${var.region}"
   resource_group_name = var.group_name
   location            = var.region
-  allocation_method   = "Static"
+  allocation_method   = "Dynamic"
+  domain_name_label = "eschool${random_id.ip_suffix_gen.keepers.ip_suffix}"
+
 }
 # NIC
-resource "azurerm_network_interface" "nic_list" {
-  for_each = toset(local.server_names)
+resource "azurerm_network_interface" "nic" {
 
-  name                = "vm-${var.project_name}-${each.value}"
+  name                = "vm-${var.project_name}-${var.project_name}"
   location            = var.region
   resource_group_name = var.group_name
 
@@ -40,21 +46,19 @@ resource "azurerm_network_interface" "nic_list" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.subnet.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.public_ip_list[each.value].id
+    public_ip_address_id          = azurerm_public_ip.public_ip.id
   }
 }
 # Network security groups (Security rules written in security_rules.tf)
 resource "azurerm_network_security_group" "firewall_rules" {
-  for_each = toset(local.server_names)
 
-  name                = "nsg-${each.value}"
+  name                = "nsg-${var.project_name}"
   location            = var.region
   resource_group_name = var.group_name
 
 }
 # And finally associate NSG with NIC
 resource "azurerm_network_interface_security_group_association" "firewall_association" {
-  for_each                  = toset(local.server_names)
-  network_interface_id      = azurerm_network_interface.nic_list[each.value].id
-  network_security_group_id = azurerm_network_security_group.firewall_rules[each.value].id
+  network_interface_id      = azurerm_network_interface.nic.id
+  network_security_group_id = azurerm_network_security_group.firewall_rules.id
 }

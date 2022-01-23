@@ -15,6 +15,6 @@ variable "username_prefix" {
 variable "nic_test_server_id" {
   type = string
 }
-variable "nic_ci_server_id" {
+variable "ssh_keys" {
   type = string
 }

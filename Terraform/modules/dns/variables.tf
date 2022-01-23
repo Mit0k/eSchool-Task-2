@@ -13,4 +13,6 @@ variable "group_name" {
 variable "domain" {
   type = string
 }
-variable "ip_list" {}
+variable "public_ip" {
+  type = string
+}
