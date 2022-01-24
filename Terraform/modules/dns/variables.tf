@@ -16,3 +16,10 @@ variable "domain" {
 variable "public_ip" {
   type = string
 }
+
+variable "parent_zone" {
+  type = object({
+    name  = string
+    group = string
+  })
+}

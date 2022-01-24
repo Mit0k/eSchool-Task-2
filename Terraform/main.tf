@@ -33,7 +33,8 @@ module "dns_zone" {
   project_name = var.project_name
   region       = var.region
   domain       = var.domain
-  public_ip      = module.network.public_ip
+  public_ip    = module.network.public_ip
+  parent_zone  = var.parent_zone
 }
 #Module 'server'
 module "servers" {
@@ -59,4 +60,12 @@ module "database" {
   keyvault_id       = module.key-vault.keyvault_id
 
 
+}
+
+module "ansible" {
+  source = "./modules/provisioner"
+
+  fqdn     = module.dns_zone.fqdn
+  ssh_path = var.ssh_keys
+  username = var.username_prefix
 }

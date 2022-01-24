@@ -32,7 +32,7 @@ resource "azurerm_public_ip" "public_ip" {
   resource_group_name = var.group_name
   location            = var.region
   allocation_method   = "Dynamic"
-  domain_name_label = "eschool${random_id.ip_suffix_gen.keepers.ip_suffix}"
+  domain_name_label   = "eschool${random_id.ip_suffix_gen.keepers.ip_suffix}"
 
 }
 # NIC

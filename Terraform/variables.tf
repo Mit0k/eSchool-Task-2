@@ -22,15 +22,22 @@ variable "mysql_admin_login" {
   type = string
 }
 variable "mysql_admin_password" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 #TODO : Validate
 variable "domain" {
-  type    = string
+  type = string
 }
 
 variable "ssh_keys" {
   type = string
+}
+
+variable "parent_zone" {
+  type = object({
+    name  = string
+    group = string
+  })
 }
