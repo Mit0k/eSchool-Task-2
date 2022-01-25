@@ -11,13 +11,13 @@ resource "local_file" "ans_host" {
 resource "local_file" "ans_vars" {
   filename = "${path.root}/../Ansible/variables/variables.yml"
   content = templatefile("${path.module}/variables.tftpl",
-    { username     = var.username,
-      project_name = var.project_name,
-      db_admin     = var.db_admin,
-      host         = var.host,
-      db_name      = var.project_db_creds.dbname,
-      db_user      = var.project_db_creds.username,
-      db_pass      = var.project_db_creds.password,
+  { username     = var.username,
+    project_name = var.project_name,
+    db_admin     = var.db_admin,
+    host         = var.host,
+    db_name      = var.project_db_creds.dbname,
+    db_user      = var.project_db_creds.username,
+    db_pass      = var.project_db_creds.password,
 
   })
 }

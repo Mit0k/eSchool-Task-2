@@ -35,12 +35,13 @@ resource "random_password" "password" {
 }
 
 resource "azurerm_mysql_flexible_server" "mysql_db" {
-  name                   = "mysql-${var.project_name}-tester"
+  name                   = "fdb"
   resource_group_name    = var.group_name
   location               = var.region
   administrator_login    = var.mysql_admin_login
   administrator_password = random_password.password.result
   backup_retention_days  = 7
+  version                = "5.7"
   delegated_subnet_id    = azurerm_subnet.internal.id
   private_dns_zone_id    = azurerm_private_dns_zone.main_zone.id
   sku_name               = "B_Standard_B1s"
