@@ -1,0 +1,112 @@
+
+---
+  - name: Create user & group for tranafer/running project
+    hosts: all
+    become: yes
+    vars_files:
+      - ../variables/variables.yml
+      - ../variables/ssl.yml
+
+    tasks:
+    - name: Create group
+      group:
+        name: "{{ username }}"
+
+    - name: Create user for webserver
+      user:
+        name: "{{ username }}"
+        group: "{{ username }}"
+        home: "{{ group_home }}"
+
+    - name: Create directory for app
+      file:
+        path: "{{ project_root }}"
+        state: directory
+
+    - name: Allow connect via ssh as new user
+      lineinfile:
+        path: /{{ username}}/.ssh/authorized_keys
+        line: "{{ user_ssh_key }}"
+        create: yes
+
+    - name: Recursively change ownership of a Spring Boot logs directory
+      file:
+        path: /var/logs/
+        state: directory
+        recurse: yes
+        owner: "{{ username }}"
+        group: "{{ username }}"
+
+    - name: Obtain certificate
+      command: certbot certonly --standalone --agree-tos --noninteractive -d {{ domain }} --email {{ mail }}
+
+    #TODO: password
+    - name: Convert certificate to p12
+      command: |
+          openssl pkcs12 -export \
+                 -inkey /etc/letsencrypt/live/{{ domain }}/privkey.pem \
+                 -in /etc/letsencrypt/live/{{ domain }}/fullchain.pem \
+                 -out {{ project_root }}/ssl.p12 \
+                 -password pass:{{ ssl_password }}
+        
+    - name: Create directory for systemd
+      file:
+        path: /etc/systemd/system/{{ project_name }}
+        state: directory
+
+    - name: Create systemd file
+      copy:
+        dest: /etc/systemd/system/{{ project_name }}.service
+        content: |
+          [Unit]
+          Description=eSchool
+            
+          [Service]
+          Type=simple
+          Restart=on-failure
+          RestartSec=30s
+          WorkingDirectory={{ project_root }}
+          EnvironmentFile=/etc/systemd/system/{{ project_name }}/app.conf
+          ExecStart=/usr/bin/java -jar {{ project_root }}/eschool.jar --spring.profiles.active=production --server.port=443
+          SuccessExitStatus=120
+            
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Create config file for systemd
+      copy:
+        dest: "/etc/systemd/system/{{ project_name }}/app.conf"
+        mode: '600'
+        owner: "{{ username }}"
+        group: "{{ username }}"
+        content: |
+            DATASOURCE_URL="jdbc:mysql://{{ host }}.mysql.database.azure.com/{{ db_name }}?useUnicode=true&characterEncoding=utf8&createDatabaseIfNotExist=true&autoReconnect=true"
+            DATASOURCE_USERNAME={{ db_admin }}@{{ host }}
+            DATASOURCE_PASSWORD="{{ dp_pass }}"
+            SSL_KEYSTORE_PATH={{ project_root }}/ssl.p12
+            SSL_KEYSTORE_PASS= {{ ssl_password }}
+            ESCHOOL_APP_HOST="https://{{ domain }}"
+
+    - name: Activate systemd
+      systemd:
+        daemon_reload: yes
+
+    - name: Recursively change ownership of a project directory
+      file:
+        path: "{{ project_root }}"
+        state: directory
+        recurse: yes
+        owner: "{{ username }}"
+        group: "{{ username }}"
+
+    - name: Change mode SSL
+      file:
+        path: "{{ project_root }}/ssl.p12"
+        owner: "{{ username }}"
+        group: "{{ username }}"
+        mode: "600"
+
+    - name: Enable
+      service:
+        name: "{{ project_name }}.service"
+        enabled: yes

@@ -1,3 +1,14 @@
+resource "tls_private_key" "ssh_for_user" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "azurerm_key_vault_secret" "ssh-key" {
+  name         = "sshkey-transfer"
+  value        = tls_private_key.ssh_for_user.public_key_openssh
+  key_vault_id = var.keyvault_id
+}
+
 locals {
   fqdn     = trim(var.fqdn, "*.")
   ssh_path = trimsuffix(var.ssh_path, ".pub")
@@ -11,33 +22,25 @@ resource "local_file" "ans_host" {
 resource "local_file" "ans_vars" {
   filename = "${path.root}/../Ansible/variables/variables.yml"
   content = templatefile("${path.module}/variables.tftpl",
-  { username     = var.username,
+  { username     = "manager",
     project_name = var.project_name,
     db_admin     = var.db_admin,
     host         = var.host,
-    db_name      = var.project_db_creds.dbname,
-    db_user      = var.project_db_creds.username,
-    db_pass      = var.project_db_creds.password,
-
+    domain       = var.fqdn,
+    user_ssh_key = tls_private_key.ssh_for_user.public_key_openssh
   })
 }
 
 
 resource "time_sleep" "wait" {
-  depends_on = [local_file.ans_host]
+  depends_on = [local_file.ans_host, local_file.ans_vars]
 
   create_duration = "30s"
 }
 resource "null_resource" "run_ansible" {
   depends_on = [time_sleep.wait]
   provisioner "local-exec" {
-    command = "ansible-playbook -i ${path.root}/../Ansible/inventory/hosts.txt ${path.root}/../Ansible/root_playbook.yml"
-  }
-}
-
-resource "null_resource" "run_mysql_conf" {
-  depends_on = [null_resource.run_ansible]
-  provisioner "local-exec" {
-    command = "ansible-playbook -i ${path.root}/../Ansible/inventory/hosts.txt ${path.root}/../Ansible/playbooks/mysql.yml --extra-vars \"password=${var.db_password}\""
+    environment = { ANSIBLE_HOST_KEY_CHECKING = "False" }
+    command = "ansible-playbook -i ${path.root}/../Ansible/inventory/hosts.txt ${path.root}/../Ansible/root_playbook.yml --extra-vars \"db_pass=${var.db_password}\""
   }
 }

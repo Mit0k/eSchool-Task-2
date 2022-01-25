@@ -4,11 +4,12 @@ variable "fqdn" {
 variable "ssh_path" {
   type = string
 }
-
+variable "group_name" {
+  type = string
+}
 variable "username" {
   type = string
 }
-
 variable "project_name" {
   type = string
 }
@@ -22,10 +23,6 @@ variable "db_password" {
 variable "host" {
   type = string
 }
-variable "project_db_creds" {
-  type = object({
-    dbname   = string
-    username = string
-    password = string
-  })
+variable "keyvault_id" {
+  type = string
 }

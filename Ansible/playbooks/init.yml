@@ -20,10 +20,6 @@
         name: certbot
         state: latest
 
-    - name: Install Mysql
-      apt:
-        name: mysql-server-8.0
-        state: latest
     # Restart required?
     - name: Check if reboot required
       stat: 

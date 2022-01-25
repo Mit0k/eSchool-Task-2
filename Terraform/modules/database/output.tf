@@ -1,5 +1,5 @@
 output "host" {
-  value = "${azurerm_mysql_flexible_server.mysql_db.name}.mysql.database.azure.com"
+  value = azurerm_mysql_server.database.name
 }
 
 output "password" {

@@ -1,5 +1,4 @@
 ### Security rules for TEST SERVER
-# TODO: Refactoring
 locals {
   nsg_rules = {
     "allow_https" = { priority = 100, port_range = 433, protocol = "tcp" },

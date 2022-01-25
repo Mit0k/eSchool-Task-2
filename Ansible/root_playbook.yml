@@ -1,6 +1,6 @@
 ---
-- name: Initial Setup
+- name: Initial setup
   import_playbook: playbooks/init.yml
 
-- name: Two
-  import_playbook: playbooks/user_conf.yml
+- name: Prepare for deploy
+  import_playbook: playbooks/final.yml

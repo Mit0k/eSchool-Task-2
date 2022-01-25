@@ -19,32 +19,28 @@ variable "username_prefix" {
 }
 
 variable "mysql_admin_login" {
-  type = string
+  description = "mysql admin login"
+  type        = string
 }
 variable "mysql_admin_password" {
-  type      = string
-  sensitive = true
-  default   = ""
+  description = "mysql admin password"
+  type        = string
+  sensitive   = true
+  default     = ""
 }
 
-variable "project_db_creds" {
-  type = object({
-    dbname   = string
-    username = string
-    password = string
-  })
-}
-
-#TODO : Validate
 variable "domain" {
-  type = string
+  description = "domain for project site"
+  type        = string
 }
 
-variable "ssh_keys" {
-  type = string
+variable "ssh_pubkey" {
+  description = "Public key (SSH)"
+  type        = string
 }
 
 variable "parent_zone" {
+  description = "Parent DNS zone for domain"
   type = object({
     name  = string
     group = string

@@ -3,7 +3,7 @@
 ## TODO: "There are no credentials provided in your command and environment, we will query for account key for your storage account."
 # TODO: CREATE FILE wo creating RG...KV
 LOCATION="eastus"
-PROJECT="escoolManual"
+PROJECT="escooltestone"
 RESOURCE_GROUP_NAME="rg-secrets-$LOCATION"
 STORAGE_ACCOUNT_NAME="storagetfstate$RANDOM"
 CONTAINER_NAME="containertfstate"
@@ -41,9 +41,9 @@ create_file()
   else
     echo > $FILE
   fi;
-  echo "resource_group_name   = \"$RESOURCE_GROUP_NAME\"" \
-        "storage_account_name = \"$STORAGE_ACCOUNT_NAME\"" \
-        "container_name       = \"$CONTAINER_NAME\"" \
+  echo "resource_group_name   = \"$RESOURCE_GROUP_NAME\"\n" \
+        "storage_account_name = \"$STORAGE_ACCOUNT_NAME\"\n" \
+        "container_name       = \"$CONTAINER_NAME\"\n" \
         "key                  = \"$KEYVAULT_NAME\"" >> $FILE
 }
 

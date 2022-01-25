@@ -23,3 +23,7 @@ variable "vnet_data" {
     id   = string
   })
 }
+
+variable "ip" {
+  type = string
+}

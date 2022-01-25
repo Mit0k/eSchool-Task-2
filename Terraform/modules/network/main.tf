@@ -20,19 +20,18 @@ resource "azurerm_subnet" "subnet" {
 variable "ip_suffix" {
   default = ""
 }
-resource "random_id" "ip_suffix_gen" {
-  byte_length = 8
-  keepers = {
-    ip_suffix = var.ip_suffix
-  }
+resource "random_integer" "ip_suffix_gen" {
+  min = 100
+  max = 999
 }
+
 # Public IP for VM`s
 resource "azurerm_public_ip" "public_ip" {
   name                = "pip-${var.project_name}-${var.project_name}-${var.region}"
   resource_group_name = var.group_name
   location            = var.region
   allocation_method   = "Dynamic"
-  domain_name_label   = "eschool${random_id.ip_suffix_gen.keepers.ip_suffix}"
+  domain_name_label   = "eschool${random_integer.ip_suffix_gen.result}"
 
 }
 # NIC
