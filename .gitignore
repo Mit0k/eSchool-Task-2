@@ -3,3 +3,4 @@
 /Terraform/.terraform/
 /Terraform/backend.conf
 /Terraform/*.auto.tfvars
+!/Terraform/EXAMPLE.variables.auto.tfvars
