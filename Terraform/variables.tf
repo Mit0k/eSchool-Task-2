@@ -24,6 +24,15 @@ variable "mysql_admin_login" {
 variable "mysql_admin_password" {
   type      = string
   sensitive = true
+  default   = ""
+}
+
+variable "project_db_creds" {
+  type = object({
+    dbname   = string
+    username = string
+    password = string
+  })
 }
 
 #TODO : Validate

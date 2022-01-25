@@ -1,0 +1,6 @@
+---
+- name: Initial Setup
+  import_playbook: playbooks/init.yml
+
+- name: Two
+  import_playbook: playbooks/user_conf.yml

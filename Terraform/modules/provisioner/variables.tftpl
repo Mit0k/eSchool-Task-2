@@ -1,0 +1,13 @@
+---
+project_root: /usr/local/${project_name}
+username: ${username}
+groupname: ${username}
+group_home: /home/${username}
+db_admin: ${db_admin}
+host: ${host}
+db_name: ${db_name}
+db_user: ${db_user}
+db_pass: ${db_pass}
+EXEC_create_db: CREATE DATABASE ${db_name} DEFAULT CHARSET = utf8 COLLATE = utf8_unicode_ci
+EXEC_create_user: CREATE USER '${db_user}'@'%' IDENTIFIED BY '${db_pass}'
+EXEC_grant: GRANT ALL PRIVILEGES ON ${db_name}.*  TO ${db_user}@'%' WITH GRANT OPTION;

@@ -65,7 +65,12 @@ module "database" {
 module "ansible" {
   source = "./modules/provisioner"
 
-  fqdn     = module.dns_zone.fqdn
-  ssh_path = var.ssh_keys
-  username = var.username_prefix
+  fqdn             = module.network.public_ip
+  ssh_path         = var.ssh_keys
+  username         = var.username_prefix
+  project_name     = var.project_name
+  db_admin         = var.mysql_admin_login
+  db_password      = module.database.password
+  host             = module.database.host
+  project_db_creds = var.project_db_creds
 }

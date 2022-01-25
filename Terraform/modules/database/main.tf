@@ -56,6 +56,6 @@ resource "azurerm_key_vault_secret" "mysql_database_password" {
 
 resource "azurerm_key_vault_secret" "mysql_database_connection" {
   name         = "mysql-connection-string"
-  value        = "jdbc:mysql://${azurerm_mysql_flexible_server.mysql_db.name}.mysql.database.azure.com:3306/{your_database}?useSSL=false&requireSSL=false"
+  value        = "jdbc:mysql://${azurerm_mysql_flexible_server.mysql_db.name}.${azurerm_private_dns_zone.main_zone.name}:3306/{your_database}?useSSL=true"
   key_vault_id = var.keyvault_id
 }

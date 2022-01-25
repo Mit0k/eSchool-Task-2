@@ -28,5 +28,6 @@ resource "azurerm_linux_virtual_machine" "test_server" {
     public_key = file(var.ssh_keys)
     username   = var.username_prefix
   }
+
 }
 
