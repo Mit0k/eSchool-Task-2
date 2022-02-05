@@ -7,7 +7,7 @@ PROJECT="escooltestone"
 RESOURCE_GROUP_NAME="rg-secrets-$LOCATION"
 STORAGE_ACCOUNT_NAME="storagetfstate$RANDOM"
 CONTAINER_NAME="containertfstate"
-KEYVAULT_NAME="kv-$PROJECT"
+KEYVAULT_NAME="kv-$PROJECT-$RANDOM"
 
 create_secret()
 {

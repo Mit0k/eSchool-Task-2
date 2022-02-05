@@ -2,5 +2,11 @@
 - name: Initial setup
   import_playbook: playbooks/init.yml
 
-- name: Prepare for deploy
-  import_playbook: playbooks/final.yml
+- name: Create user
+  import_playbook: playbooks/user.yml
+
+- name: Create DB
+  import_playbook: playbooks/mysql.yml
+
+- name: Final preparation before deployment
+  import_playbook: playbooks/app.yml

@@ -1,33 +1,42 @@
 
 ---
-  - name: Create user & group for tranafer/running project
+  - name: Prepare environment for app deployment
     hosts: all
     become: yes
     vars_files:
       - ../variables/variables.yml
       - ../variables/ssl.yml
+      - ../variables/mysql_conf.yml
 
     tasks:
-    - name: Create group
-      group:
-        name: "{{ username }}"
-
-    - name: Create user for webserver
-      user:
-        name: "{{ username }}"
-        group: "{{ username }}"
-        home: "{{ group_home }}"
-
     - name: Create directory for app
       file:
         path: "{{ project_root }}"
         state: directory
 
+    - name: debug
+      debug:
+        msg: "/home/{{ username }}/.ssh"
+
+
+    - name: Create .ssh directory
+      file:
+        path: "/home/{{ username }}/.ssh"
+        owner: "{{ username }}"
+        group: "{{ username }}"
+        state: directory
+
+
     - name: Allow connect via ssh as new user
       lineinfile:
-        path: /{{ username}}/.ssh/authorized_keys
+        path: "/home/{{ username }}/.ssh/authorized_keys"
         line: "{{ user_ssh_key }}"
+        owner: "{{ username }}"
+        group: "{{ username }}"
         create: yes
+
+    - name: Allow Tomcat use port 443
+      shell: setcap cap_net_bind_service=+ep /lib/jvm/java-1.8.0-openjdk-amd64/jre/bin/java
 
     - name: Recursively change ownership of a Spring Boot logs directory
       file:
@@ -37,18 +46,26 @@
         owner: "{{ username }}"
         group: "{{ username }}"
 
+    - name: Create logfile
+      file:
+        dest: /var/logs/spring-boot-logger.log
+        mode: "600"
+        owner: "{{ username }}"
+        group: "{{ username }}"
+        state: touch
+
     - name: Obtain certificate
       command: certbot certonly --standalone --agree-tos --noninteractive -d {{ domain }} --email {{ mail }}
 
-    #TODO: password
     - name: Convert certificate to p12
       command: |
-          openssl pkcs12 -export \
-                 -inkey /etc/letsencrypt/live/{{ domain }}/privkey.pem \
-                 -in /etc/letsencrypt/live/{{ domain }}/fullchain.pem \
-                 -out {{ project_root }}/ssl.p12 \
-                 -password pass:{{ ssl_password }}
-        
+        openssl pkcs12 -export \
+           -inkey /etc/letsencrypt/live/{{ domain }}/privkey.pem \
+           -in /etc/letsencrypt/live/{{ domain }}/fullchain.pem \
+           -name "tomcat" \
+           -out {{ project_root }}/ssl.p12 \
+           -password pass:{{ ssl_password }}
+
     - name: Create directory for systemd
       file:
         path: /etc/systemd/system/{{ project_name }}
@@ -60,32 +77,34 @@
         content: |
           [Unit]
           Description=eSchool
-            
+          
           [Service]
           Type=simple
+          User={{ username }}
+          Group={{ username }}
           Restart=on-failure
           RestartSec=30s
           WorkingDirectory={{ project_root }}
           EnvironmentFile=/etc/systemd/system/{{ project_name }}/app.conf
           ExecStart=/usr/bin/java -jar {{ project_root }}/eschool.jar --spring.profiles.active=production --server.port=443
           SuccessExitStatus=120
-            
+      
           [Install]
           WantedBy=multi-user.target
 
     - name: Create config file for systemd
       copy:
         dest: "/etc/systemd/system/{{ project_name }}/app.conf"
+        content: |
+          DATASOURCE_URL='jdbc:mysql://{{ host }}:3306/{{ app_db_name }}?useUnicode=true&characterEncoding=utf8&createDatabaseIfNotExist=true&autoReconnect=true&useSSL=true&enabledTLSProtocols=TLSv1.2'
+          DATASOURCE_USERNAME='{{ app_db_user }}'
+          DATASOURCE_PASSWORD='{{ app_db_pass }}'
+          SSL_KEYSTORE_PATH='{{ project_root }}/ssl.p12'
+          SSL_KEYSTORE_PASS='{{ ssl_password }}'
+          ESCHOOL_APP_HOST='https://{{ domain }}'
         mode: '600'
         owner: "{{ username }}"
         group: "{{ username }}"
-        content: |
-            DATASOURCE_URL="jdbc:mysql://{{ host }}.mysql.database.azure.com/{{ db_name }}?useUnicode=true&characterEncoding=utf8&createDatabaseIfNotExist=true&autoReconnect=true"
-            DATASOURCE_USERNAME={{ db_admin }}@{{ host }}
-            DATASOURCE_PASSWORD="{{ dp_pass }}"
-            SSL_KEYSTORE_PATH={{ project_root }}/ssl.p12
-            SSL_KEYSTORE_PASS= {{ ssl_password }}
-            ESCHOOL_APP_HOST="https://{{ domain }}"
 
     - name: Activate systemd
       systemd:
@@ -106,7 +125,14 @@
         group: "{{ username }}"
         mode: "600"
 
-    - name: Enable
-      service:
+    - name: Allow usergroup to have passwordless sudo
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        line: '{{ username }} ALL=NOPASSWD: /bin/systemctl restart {{ project_name }}.service'
+        validate: visudo -cf %s
+
+    - name: Enable service and not touch the state
+      ansible.builtin.service:
         name: "{{ project_name }}.service"
         enabled: yes

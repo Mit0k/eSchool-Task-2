@@ -1,5 +1,5 @@
 output "host" {
-  value = azurerm_mysql_server.database.name
+  value = "${azurerm_mysql_flexible_server.mysql_db.name}.${azurerm_private_dns_zone.main_zone.name}"
 }
 
 output "password" {

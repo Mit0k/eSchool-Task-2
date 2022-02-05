@@ -20,15 +20,7 @@
         name: certbot
         state: latest
 
-    # Restart required?
-    - name: Check if reboot required
-      stat: 
-        path: /var/run/reboot-required
-      register: reboot_required_file
-
-    # Initate system restart
-    - name: Reboot if required
-      reboot:
-        msg: "Reboot initiated by Ansible due to system updates"
-        reboot_timeout: 5400
-      when: reboot_required_file.stat.exists == true
+    - name: Install Mysql
+      apt:
+        name: mysql-client-8.0
+        state: latest

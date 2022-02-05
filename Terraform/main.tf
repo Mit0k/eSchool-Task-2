@@ -49,7 +49,7 @@ module "servers" {
 }
 
 module "database" {
-  depends_on = [module.servers]
+  depends_on   = [module.servers]
   source       = "./modules/database"
   group_name   = module.group.resource_group_name
   project_name = var.project_name
@@ -58,9 +58,10 @@ module "database" {
   vnet_data         = module.network.vnet_data
   mysql_admin_login = var.mysql_admin_login
   keyvault_id       = module.key-vault.keyvault_id
-  ip = module.network.public_ip
+  ip                = module.network.public_ip
 
 }
+
 resource "time_sleep" "wait" {
   depends_on = [module.servers]
 
@@ -68,9 +69,9 @@ resource "time_sleep" "wait" {
 }
 module "ansible" {
   depends_on = [time_sleep.wait]
-  source = "./modules/provisioner"
+  source     = "./modules/provisioner"
 
-  fqdn         = module.network.public_fqdn
+  fqdn         = module.dns_zone.fqdn
   ssh_path     = var.ssh_pubkey
   username     = var.username_prefix
   project_name = var.project_name
