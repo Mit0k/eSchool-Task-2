@@ -3,7 +3,7 @@ project_name : demo
 project_root: /usr/local/demo
 username: manager
 group_home: /home/manager
-host: fdbhawk.demo.mysql.database.azure.com
+host: INPUT_HOST
 db_name: demo
 db_admin: psqladmin
 domain: INPUT_DOMAIN
