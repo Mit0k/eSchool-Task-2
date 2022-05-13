@@ -1,7 +1,7 @@
 ---
 app_db_name: 'eschool'
 app_db_user: 'eadmin'
-app_db_pass: 'psina'
+app_db_pass: 'INPUT_PASSWORD'
 EXEC_create_db: CREATE DATABASE IF NOT EXISTS {{ app_db_name }} DEFAULT CHARSET = utf8 COLLATE = utf8_unicode_ci
 EXEC_create_user: CREATE USER IF NOT EXISTS ' {{ app_db_user }} '@'%' IDENTIFIED BY '{{ app_db_pass }}'
 EXEC_grant: GRANT ALL PRIVILEGES ON {{ app_db_name }}.*  TO {{ app_db_user }}@'%' WITH GRANT OPTION;
