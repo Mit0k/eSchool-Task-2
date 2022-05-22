@@ -12,11 +12,11 @@ Write Terraform script to deploy infrastructure for [eSchool Application](https:
 - MySQL Flexible server (using Private DNS zone)
 - KeyVault (for passwords)
 #### And provision:
-- New database and user (to omit using admin user/password of MySQL server in app)
-- Setup directories, users and privilegies for application
-- Obtain SSL certificate for application (using Certbot)
-- Generate SSH key for connecting to server as user (OR as I used it: to upload a new version of app via Jenkins)
-- Creating systemd file to run application as a service
+- New database and user (to omit using admin login/password of MySQL server in app)
+- Setups directories, users and privilegies for application
+- Obtains SSL certificate for application (using Certbot)
+- Generates SSH key for connecting to server as user (OR as I used it: to upload a new version of app via Jenkins)
+- Creates systemd file to run application as a service
 
 ### Usage:
 - Clone repo
