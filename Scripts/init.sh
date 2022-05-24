@@ -1,7 +1,4 @@
 #!/bin/bash
-##TODO: VALIDATE
-## TODO: "There are no credentials provided in your command and environment, we will query for account key for your storage account."
-# TODO: CREATE FILE wo creating RG...KV
 LOCATION="eastus"
 PROJECT="escooltestone"
 RESOURCE_GROUP_NAME="rg-secrets-$LOCATION"
